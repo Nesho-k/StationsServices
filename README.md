@@ -243,7 +243,7 @@ SELECT * FROM #BestDispo
 |Bourgogne-Franche-Comté|	3,3680981595092|	11|
 |Auvergne-Rhône-Alpes	|3,36029962546816	|12|
 
-C'est in Ile-de-France qu'il y a moyenne le plus de carburants disponible avec 3,522 carburants disponibles sur 6. La colonne RN2 correspond au rang final. 
+C'est en Ile-de-France qu'il y a moyenne le plus de carburants disponible avec 3,522 carburants disponibles sur 6. La colonne RN2 correspond au rang final. 
 
 
 **Pour rappel**, voici le classement des régions où le carburant est en moyenne le moins cher : 
@@ -289,7 +289,7 @@ ORDER BY 2
 |Bourgogne-Franche-Comté|	21|
 |Auvergne-Rhône-Alpes|	23|
 
-Ainsi, la région où se trouve les meilleurs stattions services est la région Pays de la Loire. Elle est la 2e région où l'on trouve les carburants les moins chers et la 2e région avec le plus de carburants disponibles : 2 + 2 = 4 ce qui correspond à la colonne MeilleureRégion. 
+Ainsi, la région où se trouve les meilleurs stations services est la région Pays de la Loire. Elle est la 2e région où l'on trouve les carburants les moins chers et la 2e région avec le plus de carburants disponibles : 2 + 2 = 4 ce qui correspond à la colonne MeilleureRégion. 
 
 
 
@@ -307,7 +307,7 @@ WHERE Région = 'Pays de la Loire'
 |--|
 |52|
 
-Ainsi pour la suite, nous n'allons pas détailler les explications. 
+Pour la suite, nous n'allons pas détailler les explications. 
 
 #### 1. Carburant le moins cher
 
@@ -378,6 +378,82 @@ La Loire-Atlantique est le 1er département où en moyenne, le SP98, le SP95, le
 
 
 #### 2. Le nombre de carburants disponible
+
+
+On crée un nouvelle colonne "NombreCarbuDispoDept" puis on détermine combien y a-t-il en moyenne de carburant disponible par département : 
+
+```
+ALTER TABLE prix_carburant
+ADD NombreCarbuDispoDept float
+
+UPDATE prix_carburant
+SET NombreCarbuDispoDept = LEN([Carburants Disponibles]) - LEN(REPLACE([Carburants Disponibles], ',', '')) + 1
+WHERE code_region = 52
+
+
+SELECT Département, code_region, AVG(NombreCarbuDispoDept) AS AvgDispoDept,
+		ROW_NUMBER() OVER (ORDER BY AVG(NombreCarbuDispo) DESC) AS DRN2
+		INTO #BestDispo2
+FROM prix_carburant
+WHERE code_region = 52
+GROUP BY Département, code_region 
+
+SELECT * FROM #BestDispo2
+```
+
+
+|Département|	code_region	|AvgDispoDept|	DRN2|
+|---|---|---|----|
+|Loire-Atlantique|	52	|3,6045197740113|	1|
+|Sarthe	|52	|3,53465346534653	|2|
+|Mayenne|	52|	3,51851851851852|	3|
+|Maine-et-Loire	|52|	3,5	|4|
+|Vendée|	52|	3,4051724137931|	5|
+
+
+C'est en Loire-Atlantique qu'il y a en moyenne le plus de carburants disponible avec 3,60 carburants disponibles sur 6. La colonne DRN2 correspond au rang final. 
+
+**Pour rappel**, voici le classement des départements où le carburant est en moyenne le moins cher : 
+
+|Déptmt (Département)	|Sum_Rank2	|RN1|
+|--|--|--|
+|Loire-Atlantique	|6	|1|
+|Mayenne	|12|	2|
+|Vendée	|18	|3|
+|Maine-et-Loire	|24|	4|
+|Sarthe |30|	5|
+
+
+La dernière étape consiste à effectuer (comme pour les régions) un classement final (le dernier), où pour chaque département est associé à la somme des rangs obtenus par les classement des carburants les moins cher et des disponibilités : 
+
+```
+Select Déptmt, SUM(DRN1 + DRN2) AS MeilleurDépartement
+FROM #MoinsCher2
+JOIN #BestDispo2 ON #BestDispo2.Département = #MoinsCher2.Déptmt
+GROUP BY Déptmt
+ORDER BY 2
+```
+
+
+|Déptmt (Département)	|MeilleurDépartement|
+|--|--|
+|Loire-Atlantique|	2|
+|Mayenne|	5|
+|Sarthe	|7|
+|Vendée	|8|
+|Maine-et-Loire	|8|
+
+
+Ainsi, le département où se trouve les meilleures stations services est le département Loire-Atlantique. Elle est le 1er département où l'on trouve les carburants les moins chers et le 1er département avec le plus de carburants disponibles : 1 + 1 = 2 ce qui correspond à la colonne MeilleurDépartement. 
+
+
+
+
+
+
+
+
+
 
 
 
