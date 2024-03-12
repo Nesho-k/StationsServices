@@ -243,6 +243,52 @@ SELECT * FROM #BestDispo
 |Bourgogne-Franche-Comté|	3,3680981595092|	11|
 |Auvergne-Rhône-Alpes	|3,36029962546816	|12|
 
+C'est in Ile-de-France qu'il y a moyenne le plus de carburants disponible avec 3,522 carburants disponibles sur 6. La colonne RN2 correspond au rang final. 
+
+
+Pour rappel, voici le classement des régions où le carburant est en moyenne le moins cher : 
+
+|RG (Région)|	Sum_Rank|	RN1|
+|-----------|-------------|--------|
+|Bretagne|	8|	1|
+|Pays de la Loire|	14|	2|
+|Normandie|	23	|3|
+|Nouvelle-Aquitaine|	26|	4|
+|Hauts-de-France	|31	|5|
+|Centre-Val de Loire	|37|	6|
+|Grand Est	|41	|7|
+|Occitanie	|49|	8|
+|Provence-Alpes-Côte d'Azur|	53|	9|
+|Bourgogne-Franche-Comté	|59	|10|
+|Auvergne-Rhône-Alpes|	62	|11|
+|Île-de-France	|65	|12|
+
+
+La dernière étape consiste à effectuer un classement final (le dernier), où pour chaque région est associé à la somme des rangs obtenus par les classement des carburants les moins cher et des disponibilité : 
+
+```
+Select RG, SUM(RN1 + RN2) AS MeilleurRégion
+FROM #MoinsCher
+JOIN #BestDispo ON #BestDispo.Région = #MoinsCher.RG
+GROUP BY RG
+ORDER BY 2
+```
+
+|RG (Région)|	MeilleurRégion (RN1 + RN2)|
+|-----------|-----------------|
+|Pays de la Loire	|4|
+|Bretagne|	8|
+|Centre-Val de Loire|	11|
+|Hauts-de-France	|11|
+|Nouvelle-Aquitaine|	12|
+|Occitanie	|12|
+|Provence-Alpes-Côte d'Azur|	12|
+|Île-de-France	|13|
+|Normandie	|13|
+|Grand Est	|16|
+|Bourgogne-Franche-Comté|	21|
+|Auvergne-Rhône-Alpes|	23|
+
 
 
 
