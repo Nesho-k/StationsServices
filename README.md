@@ -186,17 +186,65 @@ FROM prix_carburant
 
 Les cinq première ligne du tableau sont : 
 
-|Carburants disponibles|	NombreCarbuDispo|
-|----------------------|------------------------|
-|Gazole, SP95, E85, GPLc, SP98|	5|
-|Gazole, E85, E10, SP98	|4|
-|Gazole, E10, SP98	|3|
-|Gazole, SP95	|2|
-|Gazole, E85, E10, SP98|	4|
+|id    | Carburants disponibles|	NombreCarbuDispo|
+|------|---------------|------------------------|
+|61400001		|Gazole, SP95, E85, GPLc, SP98|	5|
+|31200020	|Gazole, E85, E10, SP98	|4|
+|34070003	|Gazole, E10, SP98	|3|
+|38300024	|Gazole, SP95	|2|
+|82300005	|Gazole, E85, E10, SP98|	4|
+
+
+Avant de continuer, nous allons vérifier que la somme entre les carburants disponibles et les carburants indsponibles est égale à 6 autrement dit qu'il y a bien que 6 carburants à chaque fois : 
+
+```
+SELECT [Carburants disponibles], [Carburants indisponibles]
+FROM prix_carburant
+WHERE LEN([Carburants Disponibles]) - LEN(REPLACE([Carburants Disponibles], ',', '')) + 1 + LEN([Carburants indisponibles]) - LEN(REPLACE([Carburants indisponibles], ',', '')) + 1 <> 6
+```
+
+Il y a aucune station service où le nombre de carburant (disponible + indisponible) est différent de 6
+
+On crée ainsi la colonne "NombreCarbuDispo" : 
+
+```
+ALTER TABLE prix_carburant
+ADD NombreCarbuDispo float
+
+UPDATE prix_carburant
+SET NombreCarbuDispo = LEN([Carburants Disponibles]) - LEN(REPLACE([Carburants Disponibles], ',', '')) + 1
+```
+
+On peut maintenant déterminer la région où il y en moyenne le plus de carburants disponibles : 
+
+```
+SELECT Région, AVG(NombreCarbuDispo) AS AvgDispo,
+		ROW_NUMBER() OVER (ORDER BY AVG(NombreCarbuDispo) DESC) AS RN2
+		INTO #BestDispo
+FROM prix_carburant
+WHERE Région is not null AND Région <> 'Corse'
+GROUP BY Région 
+
+SELECT * FROM #BestDispo
+```
+
+|Région	|AvgDispo|	RN2|
+|-------|--------|---------|
+|Île-de-France	|3,52251184834123|	1|
+|Pays de la Loire	|3,52166064981949|	2|
+|Provence-Alpes-Côte d'Azur|	3,52085967130215|	3
+|Occitanie	|3,5160403299725	4|
+|Centre-Val de Loire|	3,51569506726457	|5|
+|Hauts-de-France|	3,50126262626263	|6|
+|Bretagne	|3,48269581056466	|7|
+|Nouvelle-Aquitaine|	3,47043010752688|	8|
+|Grand Est	|3,44379391100703	|9|
+|Normandie	|3,42086330935252	|10|
+|Bourgogne-Franche-Comté|	3,3680981595092|	11|
+|Auvergne-Rhône-Alpes	|3,36029962546816	|12|
 
 
 
-Avant de continuer, nous allons vérifier  que la somme entre les carburants disponibles qu'il y bien a bien 
 
 
 
