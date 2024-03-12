@@ -12,7 +12,7 @@ Les données utilsées pour cette analyse est le fichier "prix-des-carburants-en
 L'objectif de ce projet est de déterminer dans quel département se trouve les meilleurs stations services. Tout d'abord, il faut définir le terme "meilleurs stations services". Pour cela, nous allons nous baser sur 2 critères : le prix du carburant et la disponibilité des carburants dans chaque stations servoices en d'autres termes le nombre de carburants mis à disposition.   
 
 
-### Logiciels 
+### Langage de Programmationt 
 
  - SQL : Data Cleaning et Data Exploration
 
@@ -445,6 +445,18 @@ ORDER BY 2
 
 
 Ainsi, le département où se trouve les meilleures stations services est le département Loire-Atlantique. Elle est le 1er département où l'on trouve les carburants les moins chers et le 1er département avec le plus de carburants disponibles : 1 + 1 = 2 ce qui correspond à la colonne MeilleurDépartement. 
+
+
+### Résumé 
+
+Pour déterminer le région et le département où se situe les meilleures stations services nous avons pris 2 critères : le prix des carburants et et la disponibilité des carburants. Plus le prix des carburants étaient en moyenne moins cher et plus il y avait de carburants disponible, meilleure était la station service. 
+Ainsi, nous avons trouvé que : la région Pays de la Loire était la région où il y avait les meilleurs stations services et que le département Loire-Atlantique était le département où se trouvait les meilleures stations services.  
+
+
+
+### Limites 
+
+Nous aurions pu aller plus loin en déterminant la ville où se trouve les meilleurs stations services. Cependant, à chaque fois que nous avons fait nos analyses au niveau régionnal puis au niveau départemental nous avons pris **la moyenne** qui ne permet de calculer qu'une tendance. Il se peut que le ville où se trouve les meilleures stations services ne se situe pas dans le département Loire-Atlantique ou encore moins dans la région Pays de la Loire.
 
 
 
