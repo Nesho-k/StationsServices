@@ -246,7 +246,7 @@ SELECT * FROM #BestDispo
 C'est in Ile-de-France qu'il y a moyenne le plus de carburants disponible avec 3,522 carburants disponibles sur 6. La colonne RN2 correspond au rang final. 
 
 
-Pour rappel, voici le classement des régions où le carburant est en moyenne le moins cher : 
+**Pour rappel**, voici le classement des régions où le carburant est en moyenne le moins cher : 
 
 |RG (Région)|	Sum_Rank|	RN1|
 |-----------|-------------|--------|
@@ -267,14 +267,14 @@ Pour rappel, voici le classement des régions où le carburant est en moyenne le
 La dernière étape consiste à effectuer un classement final (le dernier), où pour chaque région est associé à la somme des rangs obtenus par les classement des carburants les moins cher et des disponibilité : 
 
 ```
-Select RG, SUM(RN1 + RN2) AS MeilleurRégion
+Select RG, SUM(RN1 + RN2) AS MeilleureRégion
 FROM #MoinsCher
 JOIN #BestDispo ON #BestDispo.Région = #MoinsCher.RG
 GROUP BY RG
 ORDER BY 2
 ```
 
-|RG (Région)|	MeilleurRégion (RN1 + RN2)|
+|RG (Région)|	MeilleureRégion (RN1 + RN2)|
 |-----------|-----------------|
 |Pays de la Loire	|4|
 |Bretagne|	8|
@@ -288,6 +288,87 @@ ORDER BY 2
 |Grand Est	|16|
 |Bourgogne-Franche-Comté|	21|
 |Auvergne-Rhône-Alpes|	23|
+
+Ainsi, la région où se trouve les meilleurs stattions services est la région Pays de la Loire. Elle est la 2e région où l'on trouve les carburants les moins chers et la 2e région avec le plus de carburants disponibles : 2 + 2 = 4 ce qui correspond à la colonne MeilleureRégion. 
+
+
+
+### Quel est le meilleur département ?
+
+Maintenant que nous avons défini la région où se trouve les meilleures stations services, nous allons définir le département, au sein de cette région, où se trouve les meilleures stations services. En ce qui concerne le code, il suffit de rajouter la condition : "WHERE code_region = 52" car le code de la région Pays de la Loire est 52. 
+Ainsi, cette fois-ci nous n'allons pas détailler les explications. 
+
+#### 1. Carburant le moins cher
+
+```
+WITH DCTE1 AS (
+SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn1
+FROM prix_carburant
+where code_region = 52
+GROUP BY Département),
+
+DCTE2 AS (
+SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn2
+FROM prix_carburant
+where code_region = 52
+GROUP BY Département),
+
+DCTE3 AS (
+SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn3
+FROM prix_carburant
+where code_region = 52
+GROUP BY Département),
+
+DCTE4 AS (
+SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn4
+FROM prix_carburant
+where code_region = 52
+GROUP BY Département),
+
+DCTE5 AS (
+SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn5
+FROM prix_carburant
+where code_region = 52
+GROUP BY Département),
+
+DCTE6 AS (
+SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn6
+FROM prix_carburant
+where code_region = 52
+GROUP BY Département)
+
+SELECT Département AS Déptmt, SUM(drn1 + drn2 + drn3 + drn4 + drn5 + drn6) AS Total_Rank2, 
+			   ROW_NUMBER() OVER (ORDER BY SUM(drn1 + drn2 + drn3 + drn4 + drn5 + drn6)) AS DRN1
+			   INTO #MoinsCher2
+FROM (
+  SELECT DCTE1.Département, drn1, drn2, drn3, drn4, drn5, drn6
+	FROM DCTE1
+    JOIN DCTE2 ON DCTE1.Département = DCTE2.Département
+    JOIN DCTE3 ON DCTE1.Département = DCTE3.Département
+    JOIN DCTE4 ON DCTE1.Département = DCTE4.Département
+    JOIN DCTE5 ON DCTE1.Département = DCTE5.Département
+    JOIN DCTE6 ON DCTE1.Département = DCTE6.Département
+) AS AllRanks2
+GROUP BY Département
+
+SELECT * FROM #MoinsCher2
+```
+
+
+|Déptmt	|Total_Rank2	|RN1|
+|-------|---------------|---|
+|Loire-Atlantique	|6	|1|
+|Mayenne	|12|	2|
+|Vendée	|18	|3|
+|Maine-et-Loire	|24|	4|
+|Sarthe |30|	5|
+
+
+
+
+
+
+
 
 
 
