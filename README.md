@@ -296,7 +296,18 @@ Ainsi, la région où se trouve les meilleurs stattions services est la région 
 ### Quel est le meilleur département ?
 
 Maintenant que nous avons défini la région où se trouve les meilleures stations services, nous allons définir le département, au sein de cette région, où se trouve les meilleures stations services. En ce qui concerne le code, il suffit de rajouter la condition : "WHERE code_region = 52" car le code de la région Pays de la Loire est 52. 
-Ainsi, cette fois-ci nous n'allons pas détailler les explications. 
+
+```
+SELECT DISTINCT(code_region)
+FROM prix_carburant
+WHERE Région = 'Pays de la Loire'
+```
+
+|code_region|
+|--|
+|52|
+
+Ainsi pour la suite, nous n'allons pas détailler les explications. 
 
 #### 1. Carburant le moins cher
 
@@ -304,40 +315,40 @@ Ainsi, cette fois-ci nous n'allons pas détailler les explications.
 WITH DCTE1 AS (
 SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn1
 FROM prix_carburant
-where code_region = 52
+WHERE code_region = 52
 GROUP BY Département),
 
 DCTE2 AS (
 SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn2
 FROM prix_carburant
-where code_region = 52
+WHERE code_region = 52
 GROUP BY Département),
 
 DCTE3 AS (
 SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn3
 FROM prix_carburant
-where code_region = 52
+WHERE code_region = 52
 GROUP BY Département),
 
 DCTE4 AS (
 SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn4
 FROM prix_carburant
-where code_region = 52
+WHERE code_region = 52
 GROUP BY Département),
 
 DCTE5 AS (
 SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn5
 FROM prix_carburant
-where code_region = 52
+WHERE code_region = 52
 GROUP BY Département),
 
 DCTE6 AS (
 SELECT Département, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS drn6
 FROM prix_carburant
-where code_region = 52
+WHERE code_region = 52
 GROUP BY Département)
 
-SELECT Département AS Déptmt, SUM(drn1 + drn2 + drn3 + drn4 + drn5 + drn6) AS Total_Rank2, 
+SELECT Département AS Déptmt, SUM(drn1 + drn2 + drn3 + drn4 + drn5 + drn6) AS Sum_Rank2, 
 			   ROW_NUMBER() OVER (ORDER BY SUM(drn1 + drn2 + drn3 + drn4 + drn5 + drn6)) AS DRN1
 			   INTO #MoinsCher2
 FROM (
@@ -355,13 +366,21 @@ SELECT * FROM #MoinsCher2
 ```
 
 
-|Déptmt	|Total_Rank2	|RN1|
-|-------|---------------|---|
+|Déptmt (Département)	|Sum_Rank2	|RN1|
+|--|--|--|
 |Loire-Atlantique	|6	|1|
 |Mayenne	|12|	2|
 |Vendée	|18	|3|
 |Maine-et-Loire	|24|	4|
 |Sarthe |30|	5|
+
+La Loire-Atlantique est le 1er département où en moyenne, le SP98, le SP95, le Gazole, le E10, le E85 et le GPLc est le moins cher donc : 1+1+1+1+1+1 = 6 ce qui correspond à la colonne Sum_Rank2. 
+
+
+#### 2. Le nombre de carburants disponible
+
+
+
 
 
 
