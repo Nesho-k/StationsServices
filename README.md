@@ -466,7 +466,7 @@ Pour déterminer la région et le département où se situent les meilleures sta
 
 ### Limites 
 
-Nous aurions pu aller plus loin en déterminant la ville où se trouvent les meilleures stations-service. Cependant, à chaque fois que nous avons réalisé nos analyses au niveau régional puis au niveau départemental, nous avons pris la moyenne, ce qui permet seulement de calculer une tendance. Il se peut que la ville abritant les meilleures stations-service ne soit pas située dans le département de la Loire-Atlantique, voire même dans la région des Pays de la Loire.
+Nous aurions pu aller plus loin en déterminant la ville où se trouvent les meilleures stations-service. Cependant, à chaque fois que nous avons réalisé nos analyses au niveau régional puis au niveau départemental, nous avons pris **la moyenne**, ce qui permet seulement de calculer une tendance. Il se peut que la ville abritant les meilleures stations-service ne soit pas située dans le département de la Loire-Atlantique, voire même dans la région des Pays de la Loire.
 
 
 
