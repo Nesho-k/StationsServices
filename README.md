@@ -17,21 +17,22 @@
 
 ### Source des données 
 
-Les données utilsées pour cette analyse est le fichier "prix-des-carburants-en-france-flux-instantane.csv" contenant des informations sur : la ville où se situe les stations services, le code postal, le département, la région, le prix de chaque carburant (qui sont dans cette base de données le SP98, le SP95, le Gazole, le GPLc, le E10 et le E85), le nombre de carburant disponible, les services proposés et les horaires détaillées.   
+Les données utilisées pour cette analyse sont contenues dans le fichier 'prix-des-carburants-en-france-flux-instantane.csv'. Elles comprennent des informations sur la ville où se trouvent les stations-service, le code postal, le département, la région, le prix de chaque carburant (SP98, SP95, Gazole, GPLc, E10 et E85), le nombre de carburants disponibles, les services proposés et les horaires détaillés.
 
 ### Aperçu du projet 
 
-L'objectif de ce projet est de déterminer dans quel département se trouve les meilleurs stations services. Tout d'abord, il faut définir le terme "meilleurs stations services". Pour cela, nous allons nous baser sur 2 critères : le prix du carburant et la disponibilité des carburants dans chaque stations servoices en d'autres termes le nombre de carburants mis à disposition.   
+L'objectif de ce projet est de déterminer dans quel département se trouvent les meilleures stations-service. Tout d'abord, il convient de définir le terme 'meilleures stations-service'. Pour cela, nous allons nous baser sur deux critères : le prix des carburants et la disponibilité des carburants dans chaque station-service, c'est-à-dire le nombre de carburants mis à disposition.
+
 
 
 ### Langage de Programmation 
 
- - SQL : Data Cleaning et Data Exploration
+ - SQL : Nettoyage des données et Exploration des données 
 
 
 ### Nettoyage des données 
 
-Dans cette phase, nous allons supprimer les colonnes inutiles qui ne serviront pas à notre analyse. 
+Dans cette phase, nous allons supprimer les colonnes inutiles qui ne seront pas utiles pour notre analyse
 
 ```
 alter table prix_carburant 
@@ -63,25 +64,24 @@ select * from prix_carburant
 
 ### Données Manquantes 
 
-Pour déterminer quel département possède les meileurs stations services, il faut dans un premier temps déterminer quel région possède les meilleurs stations services avec les crotères que nosu avons établi auparavant. Cependant, au cours de notre analyse nous nous sommes rendus compte que la région Corse ne possède pas de SP98 et de E85. Pour faciliter l'analyse, nous n'allons pas prendre en compte la région Corse : il n'y aura donc que 12 régions. 
+Pour déterminer quel département possède les meilleures stations-service, nous devons d'abord identifier quelle région possède les meilleures stations-service en utilisant les critères que nous avons établis précédemment. Cependant, au cours de notre analyse, nous avons constaté que la région Corse ne propose pas de SP98 ni de E85. Pour simplifier l'analyse, nous exclurons donc la région Corse, ce qui nous laisse avec seulement 12 régions.
 
 
 ### Exploration des données 
 
-Dans cette partie, nous allons répondre aux questions : 
- - Quel région possède les meilleurs stations services ?
- - Quel département possède les meilleurs stations services ?
+Dans cette partie, nous répondrons aux questions : 
+ - Quel région possède les meilleures stations-service ?
+ - Quel département possède les meilleures stations-service ?
 
-Pour ce faire nous allons nous baser sur 2 critères. Le premier est le prix du carburant : **pour chaque carburant** nous allons effectuer un classement des régions où le carburant est en moyenne le moins cher. Ensuite, nous effecturons un classement final où le rang de chaque région est la somme des rangs obtenus pour chaque région. 
-Le 2e critère est la disponiblité des carburants. Pour ce critère, nous allons également effectuer un classement où pour chaque région va être associé le nombre moyen de carburant mis à disposition.
+Pour ce faire, nous nous baserons sur deux critères. Le premier est le prix du carburant : **pour chaque type de carburant**, nous effectuerons un classement des régions où le carburant est en moyenne le moins cher. Plus le carburant est en moyenne moins cher, mieux la région sera classée. Ensuite, nous effectuerons un classement final où le rang de chaque région sera la somme des rangs obtenus pour chaque type de carburant. Le deuxième critère est la disponibilité des carburants. Pour ce critère, nous effectuerons également un classement où chaque région sera associée au nombre moyen de types de carburants mis à disposition. Plus il y aura en moyenne de types de carburants disponibles, mieux la région sera classée.
 
-Enfin, une fois avoir trouver la meilleur région nous allons réitérer les étapes au niveau départementale. 
+Enfin, une fois la meilleure région identifiée, nous répéterons les étapes au niveau départemental.
 
 
 ### Quel est la meilleure région ?
 #### 1. Carburant le moins cher 
 
-Pour chaque carburant nous allons effectuer un classement des régions où le carburant est le moins cher, par exemple pour le Gazole : 
+Pour chaque carburant, nous allons effectuer un classement en fonction du prix, par exemple pour le Gazole :
 
 ```
 SELECT Région, AVG([Prix Gazole]) AS AvgGazole,
@@ -106,8 +106,7 @@ GROUP BY Région
 |Bourgogne-Franche-Comté	|1,82310169491525	|11|
 |Île-de-France|	1,86778004807692|	12|
 
-La Bretagne est la région où le Gazole est en moyenne le moins cher. Une fois avoir établi un classement pour chaque carburant, nous les regroupons dans un CTE qui lui même est contenu dans une tableau temporaire.
-Enfin, un classement final est effectué où pour chaque région est associé la somme des rangs obtenus dans les classements auparavant (voir exemple après le code)
+La Bretagne est la région où le Gazole est en moyenne le moins cher. Une fois que nous avons établi un classement pour chaque carburant, nous les regroupons dans un CTE, qui lui-même est contenu dans un tableau temporaire. Enfin, un classement final est effectué où pour chaque région, est associée la somme des rangs obtenus dans les classements précédents (voir exemple après le code).
 
 
 ```
@@ -181,14 +180,13 @@ SELECT * FROM #MoinsCher
 |Île-de-France	|65	|12|
 
 
-Par exemple, la Bretagne est la 1er région la moins cher en ce qui concerne le SP98, le SP95, le Gazole, le E10 et le GPLc et la 3e région la moins cher en ce qui concerne le E85 donc 1+1+1+1+1+3 = 8 ce qui correspond au Sum_Rank
-La colonne RN1 correspond au rang final. La Bretagne est donc la région où les carburants sont en moyenne les moins chers.
+Par exemple, la Bretagne est la région la moins chère en ce qui concerne le SP98, le SP95, le Gazole, le E10 et le GPLc, et la troisième région la moins chère en ce qui concerne le E85. Donc, 1 + 1 + 1 + 1 + 1 + 3 = 8, ce qui correspond au Sum_Rank. La colonne RN1 correspond au rang final. Ainsi, la Bretagne est la région où les carburants sont en moyenne les moins chers.
 
 
 
-#### 2. Le nombre de carburants disponible
+#### 2. Le nombre de carburants disponibles
 
-Dans cette partie, nous allons déterminer dans quel région y a-t-il en moyenne le plus de carburants disponilble. Pour ce faire nous allons utiliser la colonne "Carburants Disponibles". Le problème est que nous voulons savoir combien y-t-il de carburants disponibles et non pas quels carburants sont disponibles. Nous allons donc créer une nouvelle colonne indiquant le nombre de carburants disponible pour chaque stations services : 
+Dans cette partie, nous allons déterminer dans quelle région il y a en moyenne le plus grand nombre de types de carburants disponibles. Pour ce faire, nous allons utiliser la colonne "Carburants Disponibles". Cependant, le problème est que nous voulons savoir combien de carburants sont disponibles et non quels carburants sont disponibles. Nous allons donc créer une nouvelle colonne indiquant le nombre de carburants disponibles pour chaque station-service : 
 
 ```
 SELECT [Carburants disponibles],  
@@ -196,7 +194,7 @@ SELECT [Carburants disponibles],
 FROM prix_carburant
 ```
 
-Les cinq première ligne du tableau sont : 
+Les cinq premières lignes du tableau sont : 
 
 |id    | Carburants disponibles|	NombreCarbuDispo|
 |------|---------------|------------------------|
@@ -207,7 +205,7 @@ Les cinq première ligne du tableau sont :
 |82300005	|Gazole, E85, E10, SP98|	4|
 
 
-Avant de continuer, nous allons vérifier que la somme entre les carburants disponibles et les carburants indsponibles est égale à 6 autrement dit qu'il y a bien que 6 carburants à chaque fois : 
+Avant de continuer, nous allons vérifier que la somme des carburants disponibles et indsponibles est égale à 6 autrement dit qu'il y a bien que 6 carburants à chaque fois : 
 
 ```
 SELECT [Carburants disponibles], [Carburants indisponibles]
@@ -215,9 +213,8 @@ FROM prix_carburant
 WHERE LEN([Carburants Disponibles]) - LEN(REPLACE([Carburants Disponibles], ',', '')) + 1 + LEN([Carburants indisponibles]) - LEN(REPLACE([Carburants indisponibles], ',', '')) + 1 <> 6
 ```
 
-Il y a aucune station service où le nombre de carburant (disponible + indisponible) est différent de 6
 
-On crée ainsi la colonne "NombreCarbuDispo" : 
+On crée ensuite la colonne "NombreCarbuDispo" : 
 
 ```
 ALTER TABLE prix_carburant
@@ -227,8 +224,7 @@ UPDATE prix_carburant
 SET NombreCarbuDispo = LEN([Carburants Disponibles]) - LEN(REPLACE([Carburants Disponibles], ',', '')) + 1
 ```
 
-On peut maintenant déterminer la région où il y en moyenne le plus de carburants disponibles : 
-
+On peut maintenant déterminer la région où il y a en moyenne le plus grand nombre de types de carburants disponibles :
 ```
 SELECT Région, AVG(NombreCarbuDispo) AS AvgDispo,
 		ROW_NUMBER() OVER (ORDER BY AVG(NombreCarbuDispo) DESC) AS RN2
@@ -255,8 +251,7 @@ SELECT * FROM #BestDispo
 |Bourgogne-Franche-Comté|	3,3680981595092|	11|
 |Auvergne-Rhône-Alpes	|3,36029962546816	|12|
 
-C'est en Ile-de-France qu'il y a moyenne le plus de carburants disponible avec 3,522 carburants disponibles sur 6. La colonne RN2 correspond au rang final. 
-
+C'est en Île-de-France qu'il y a en moyenne le plus grand nombre de carburants disponibles, avec 3,522 carburants disponibles sur 6. La colonne RN2 correspond au rang final.
 
 **Pour rappel**, voici le classement des régions où le carburant est en moyenne le moins cher : 
 
@@ -276,7 +271,9 @@ C'est en Ile-de-France qu'il y a moyenne le plus de carburants disponible avec 3
 |Île-de-France	|65	|12|
 
 
-La dernière étape consiste à effectuer un classement final (le dernier), où pour chaque région est associé à la somme des rangs obtenus par les classement des carburants les moins cher et des disponibilité : 
+
+La dernière étape consiste à effectuer un classement final, où chaque région est associée à la somme des rangs obtenus par le classement des carburants les moins chers et le classement des disponibilités.
+
 
 ```
 Select RG, SUM(RN1 + RN2) AS MeilleureRégion
@@ -301,13 +298,16 @@ ORDER BY 2
 |Bourgogne-Franche-Comté|	21|
 |Auvergne-Rhône-Alpes|	23|
 
-Ainsi, la région où se trouve les meilleurs stations services est la région Pays de la Loire. Elle est la 2e région où l'on trouve les carburants les moins chers et la 2e région avec le plus de carburants disponibles : 2 + 2 = 4 ce qui correspond à la colonne MeilleureRégion. 
+
+Ainsi, la région où se trouvent les meilleures stations-services est la région Pays de la Loire. Elle est la 2e région où l'on trouve les carburants les moins chers et la 2e région avec le plus de carburants disponibles : 2 + 2 = 4, ce qui correspond à la colonne MeilleureRégion.
 
 
 
 ### Quel est le meilleur département ?
 
-Maintenant que nous avons défini la région où se trouve les meilleures stations services, nous allons définir le département, au sein de cette région, où se trouve les meilleures stations services. En ce qui concerne le code, il suffit de rajouter la condition : "WHERE code_region = 52" car le code de la région Pays de la Loire est 52. 
+
+Maintenant que nous avons défini la région où se trouvent les meilleures stations-services, nous allons déterminer le département, au sein de cette région, où se trouvent les meilleures stations-services. En ce qui concerne le code, il suffit d'ajouter la condition : "WHERE code_region = 52" car le code de la région Pays de la Loire est 52.
+
 
 ```
 SELECT DISTINCT(code_region)
@@ -319,7 +319,7 @@ WHERE Région = 'Pays de la Loire'
 |--|
 |52|
 
-Pour la suite, nous n'allons pas détailler les explications. 
+Pour la suite, nous allons pas détailler les explications. 
 
 #### 1. Carburant le moins cher
 
@@ -386,14 +386,13 @@ SELECT * FROM #MoinsCher2
 |Maine-et-Loire	|24|	4|
 |Sarthe |30|	5|
 
-La Loire-Atlantique est le 1er département où en moyenne, le SP98, le SP95, le Gazole, le E10, le E85 et le GPLc est le moins cher donc : 1+1+1+1+1+1 = 6 ce qui correspond à la colonne Sum_Rank2. 
+La Loire-Atlantique est le 1er département où, en moyenne, le SP98, le SP95, le Gazole, le E10, le E85 et le GPLc sont les moins chers, donc : 1 + 1 + 1 + 1 + 1 + 1 = 6, ce qui correspond à la colonne Sum_Rank2.
 
 
-#### 2. Le nombre de carburants disponible
+#### 2. Le nombre de carburants disponibles
 
 
-On crée un nouvelle colonne "NombreCarbuDispoDept" puis on détermine combien y a-t-il en moyenne de carburant disponible par département : 
-
+On crée une nouvelle colonne "NombreCarbuDispoDept" puis on détermine combien il y a en moyenne de carburants disponibles par département :
 ```
 ALTER TABLE prix_carburant
 ADD NombreCarbuDispoDept float
@@ -423,7 +422,7 @@ SELECT * FROM #BestDispo2
 |Vendée|	52|	3,4051724137931|	5|
 
 
-C'est en Loire-Atlantique qu'il y a en moyenne le plus de carburants disponible avec 3,60 carburants disponibles sur 6. La colonne DRN2 correspond au rang final. 
+C'est en Loire-Atlantique qu'il y a en moyenne le plus grand nombre de carburants disponible avec 3,60 carburants disponibles sur 6. La colonne DRN2 correspond au rang final. 
 
 **Pour rappel**, voici le classement des départements où le carburant est en moyenne le moins cher : 
 
@@ -436,7 +435,8 @@ C'est en Loire-Atlantique qu'il y a en moyenne le plus de carburants disponible 
 |Sarthe |30|	5|
 
 
-La dernière étape consiste à effectuer (comme pour les régions) un classement final (le dernier), où pour chaque département est associé à la somme des rangs obtenus par les classement des carburants les moins cher et des disponibilités : 
+La dernière étape consiste à effectuer un classement final, où chaque département est associée à la somme des rangs obtenus par le classement des carburants les moins chers et le classement des disponibilités : 
+
 
 ```
 Select Déptmt, SUM(DRN1 + DRN2) AS MeilleurDépartement
@@ -455,41 +455,18 @@ ORDER BY 2
 |Vendée	|8|
 |Maine-et-Loire	|8|
 
-
-Ainsi, le département où se trouve les meilleures stations services est le département Loire-Atlantique. Elle est le 1er département où l'on trouve les carburants les moins chers et le 1er département avec le plus de carburants disponibles : 1 + 1 = 2 ce qui correspond à la colonne MeilleurDépartement. 
+Ainsi, le département où se trouvent les meilleures stations-services est la région Pays de la Loire. Elle est le 1er département où l'on trouve les carburants les moins chers et le 1er département avec le plus de carburants disponibles : 1 + 1 = 2, ce qui correspond à la colonne MeilleurDépartement. 
 
 
 ### Résumé 
 
-Pour déterminer le région et le département où se situe les meilleures stations services nous avons pris 2 critères : le prix des carburants et et la disponibilité des carburants. Plus le prix des carburants étaient en moyenne moins cher et plus il y avait de carburants disponible, meilleure était la station service. 
-Ainsi, nous avons trouvé que : la région Pays de la Loire était la région où il y avait les meilleurs stations services et que le département Loire-Atlantique était le département où se trouvait les meilleures stations services.  
+Pour déterminer la région et le département où se situent les meilleures stations-service, nous avons pris en compte deux critères : le prix des carburants et la disponibilité des carburants. Plus le prix moyen des carburants était bas et plus il y avait de carburants disponibles, meilleure était la station-service. Ainsi, nous avons trouvé que la région des Pays de la Loire était celle où l'on trouve les meilleures stations-service, et que le département de la Loire-Atlantique était celui abritant les meilleures stations-service.
 
 
 
 ### Limites 
 
-Nous aurions pu aller plus loin en déterminant la ville où se trouve les meilleurs stations services. Cependant, à chaque fois que nous avons fait nos analyses au niveau régionnal puis au niveau départemental nous avons pris **la moyenne** qui ne permet de calculer qu'une tendance. Il se peut que la ville où se trouve les meilleures stations services ne se situe pas dans le département Loire-Atlantique ou encore moins dans la région Pays de la Loire.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Nous aurions pu aller plus loin en déterminant la ville où se trouvent les meilleures stations-service. Cependant, à chaque fois que nous avons réalisé nos analyses au niveau régional puis au niveau départemental, nous avons pris la moyenne, ce qui permet seulement de calculer une tendance. Il se peut que la ville abritant les meilleures stations-service ne soit pas située dans le département de la Loire-Atlantique, voire même dans la région des Pays de la Loire.
 
 
 
