@@ -5,7 +5,7 @@
 
 ### Source des données 
 
-Les données utilsées pour cette analyse est le fichier "prix-des-carburants-en-france-flux-instantane.csv" contenant des informations sur : la ville où se situe les stations services, le code postal, le département, la région, le prix de chaque carburant, le nombre de carburant disponible, les services proposés et les horaires détaillées.   
+Les données utilsées pour cette analyse est le fichier "prix-des-carburants-en-france-flux-instantane.csv" contenant des informations sur : la ville où se situe les stations services, le code postal, le département, la région, le prix de chaque carburant (qui sont dans cette base de données le SP98, le SP95, le Gazole, le GPLc, le E10 et le E85), le nombre de carburant disponible, les services proposés et les horaires détaillées.   
 
 ### Aperçu du projet 
 
@@ -134,7 +134,7 @@ FROM prix_carburant
 where Région is not null and Région <> 'Corse'
 GROUP BY Région)
 
-SELECT Région AS RG, SUM(rn1 + rn2 + rn3 + rn4 + rn5 + rn6) AS Total_Rank, 
+SELECT Région AS RG, SUM(rn1 + rn2 + rn3 + rn4 + rn5 + rn6) AS Sum_Rank, 
 			   ROW_NUMBER() OVER (ORDER BY SUM(rn1 + rn2 + rn3 + rn4 + rn5 + rn6)) AS RN1
 			   INTO #MoinsCher
 FROM (
@@ -152,7 +152,7 @@ GROUP BY Région
 SELECT * FROM #MoinsCher
 ```
 
-|RG (Région)|	Total_Rank|	RN1|
+|RG (Région)|	Sum_Rank|	RN1|
 |-----------|-------------|--------|
 |Bretagne|	8|	1|
 |Pays de la Loire|	14|	2|
@@ -166,6 +166,14 @@ SELECT * FROM #MoinsCher
 |Bourgogne-Franche-Comté	|59	|10|
 |Auvergne-Rhône-Alpes|	62	|11|
 |Île-de-France	|65	|12|
+
+
+Par exemple, la Bretagne est la 1er région la moins cher en ce qui concerne le SP98, le SP95, le Gazole, le E10 et le GPLc et la 3e région la moins cher en ce qui concerne le E85 donc 1+1+1+1+1+3 = 8 ce qui correspond au Sum_Rank
+La colonne RN1 correspond au rang final. La Bretagne est donc la région où les carburants sont en moyenne les moins chers.
+
+
+
+#### Le nombre de carburants disponible
 
 
 
