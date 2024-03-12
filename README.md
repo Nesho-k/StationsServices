@@ -72,9 +72,10 @@ Enfin, une fois avoir trouver la meilleur région nous allons réitérer les ét
 Pour chaque carburant nous allons effectuer un classement des régions où le carburant est le moins cher, par exemple pour le Gazole : 
 
 ```
-SELECT Région, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS rn1
+SELECT Région, AVG([Prix Gazole]) AS AvgGazole,
+       ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS rn1
 FROM prix_carburant
-where Région is not null and Région <> 'Corse'
+WHERE Région is not null and Région <> 'Corse'
 GROUP BY Région
 ```
 
@@ -99,44 +100,44 @@ Enfin, un classement final est effectué où pour chaque région est associé la
 
 ```
 WITH CTE1 AS (
-SELECT Région, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS rn1
-FROM prix_carburant
-where Région is not null and Région <> 'Corse'
-GROUP BY Région),
+	SELECT Région, AVG([Prix Gazole]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix Gazole]) ASC) AS rn1
+	FROM prix_carburant
+	where Région is not null and Région <> 'Corse'
+	GROUP BY Région),
 
 CTE2 AS (
-SELECT Région, AVG([Prix SP95]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix SP95]) ASC) AS rn2
-FROM prix_carburant
-where Région is not null and Région <> 'Corse'
-GROUP BY Région),
+	SELECT Région, AVG([Prix SP95]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix SP95]) ASC) AS rn2
+	FROM prix_carburant
+	where Région is not null and Région <> 'Corse'
+	GROUP BY Région),
 
 CTE3 AS (
-SELECT (Région), AVG([Prix SP98]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix SP98]) ASC) AS rn3
-FROM prix_carburant
-where Région is not null and Région <> 'Corse'
-GROUP BY Région),
+	SELECT (Région), AVG([Prix SP98]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix SP98]) ASC) AS rn3
+	FROM prix_carburant
+	where Région is not null and Région <> 'Corse'
+	GROUP BY Région),
 
 CTE4 AS (
-SELECT (Région), AVG([Prix E85]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix E85]) ASC) AS rn4
-FROM prix_carburant
-where Région is not null and Région <> 'Corse'
-GROUP BY Région),
+	SELECT (Région), AVG([Prix E85]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix E85]) ASC) AS rn4
+	FROM prix_carburant
+	where Région is not null and Région <> 'Corse'
+	GROUP BY Région),
 
 CTE5 AS (
-SELECT (Région), AVG([Prix GPLc]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix GPLc]) ASC) AS rn5
-FROM prix_carburant
-where Région is not null and Région <> 'Corse'
-GROUP BY Région),
+	SELECT (Région), AVG([Prix GPLc]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix GPLc]) ASC) AS rn5
+	FROM prix_carburant
+	where Région is not null and Région <> 'Corse'
+	GROUP BY Région),
 
 CTE6 AS (
-SELECT (Région), AVG([Prix E10]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix E10]) ASC) AS rn6
-FROM prix_carburant
-where Région is not null and Région <> 'Corse'
-GROUP BY Région)
+	SELECT (Région), AVG([Prix E10]) AS AvgGazole, ROW_NUMBER() OVER (ORDER BY AVG([Prix E10]) ASC) AS rn6
+	FROM prix_carburant
+	where Région is not null and Région <> 'Corse'
+	GROUP BY Région)
 
 SELECT Région AS RG, SUM(rn1 + rn2 + rn3 + rn4 + rn5 + rn6) AS Sum_Rank, 
-			   ROW_NUMBER() OVER (ORDER BY SUM(rn1 + rn2 + rn3 + rn4 + rn5 + rn6)) AS RN1
-			   INTO #MoinsCher
+	ROW_NUMBER() OVER (ORDER BY SUM(rn1 + rn2 + rn3 + rn4 + rn5 + rn6)) AS RN1
+	INTO #MoinsCher
 FROM (
   SELECT CTE1.Région, rn1, rn2, rn3, rn4, rn5, rn6
 	FROM CTE1
@@ -173,8 +174,29 @@ La colonne RN1 correspond au rang final. La Bretagne est donc la région où les
 
 
 
-#### Le nombre de carburants disponible
+#### 2. Le nombre de carburants disponible
 
+Dans cette partie, nous allons déterminer dans quel région y a-t-il en moyenne le plus de carburants disponilble. Pour ce faire nous allons utiliser la colonne "Carburants Disponibles". Le problème est que nous voulons savoir combien y-t-il de carburants disponibles et non pas quels carburants sont disponibles. Nous allons donc créer une nouvelle colonne indiquant le nombre de carburants disponible pour chaque stations services : 
+
+```
+SELECT [Carburants disponibles],  
+	   LEN([Carburants Disponibles]) - LEN(REPLACE([Carburants Disponibles], ',', '')) + 1 AS NombreCarbuDispo
+FROM prix_carburant
+```
+
+Les cinq première ligne du tableau sont : 
+
+|Carburants disponibles|	NombreCarbuDispo|
+|----------------------|------------------------|
+|Gazole, SP95, E85, GPLc, SP98|	5|
+|Gazole, E85, E10, SP98	|4|
+|Gazole, E10, SP98	|3|
+|Gazole, SP95	|2|
+|Gazole, E85, E10, SP98|	4|
+
+
+
+Avant de continuer, nous allons vérifier  que la somme entre les carburants disponibles qu'il y bien a bien 
 
 
 
